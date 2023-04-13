@@ -7,7 +7,7 @@ date_default_timezone_set('Asia/Tokyo');
 define('HOME_URL', '/TwitterClone/');
 
 ///////////////////////////////////////
-// ツイート一覧
+// マいーか一覧
 ///////////////////////////////////////
 $view_tweets = [
     [
@@ -114,7 +114,7 @@ function buildImagePath(string $name = null, string $type)
     <!-- いいね！JS -->
     <script src="<?php echo HOME_URL; ?>Views/js/likes.js" defer></script>
 
-    <title>ホーム画面/Twitterクローン</title>
+    <title>ホーム画面/Maitter</title>
     <meta name="description" content="ホーム画面です">
 </head>
 <body class="home">
@@ -160,7 +160,7 @@ function buildImagePath(string $name = null, string $type)
             <div class="ditch"></div>
             <!-- つぶやき一覧エリア -->
             <?php if (empty($view_tweets)) : ?>
-                <p class="p-3">ツイートがありません</p>
+                <p class="p-3">マ、イーカがありません</p>
             <?php else : ?>
             <div class="tweet-list">
             <?php foreach ($view_tweets as $view_tweet) : ?>
