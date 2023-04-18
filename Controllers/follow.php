@@ -9,6 +9,8 @@ include_once '../config.php';
 include_once '../util.php';
 // ナカーマデータ操作モデルを読み込む
 include_once '../Models/follows.php';
+// 通知データ操作モデルを読み込む
+include_once '../Models/notifications.php';
  
 // ------------------------------------
 // ログインチェック
@@ -33,6 +35,13 @@ if (isset($_POST['followed_user_id'])) {
     ];
     // ナカーマ登録
     $follow_id = createFollow($data);
+    // 通知を登録
+    $data_notification = [
+        'received_user_id' => $_POST['followed_user_id'],
+        'sent_user_id' => $user['id'],
+        'message' => 'ナカーマにされました。',
+    ];
+    createNotification($data_notification);
 }
  
 // ------------------------------------
