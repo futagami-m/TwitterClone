@@ -44,9 +44,10 @@ function createTweet(array $data)
     * ツイート一覧を取得
     *
     * @param array $user ログインしているユーザー情報
+    * @param string $keyword 検索キーワード
     * @return array|false
     */
-    function findTweets(array $user)
+    function findTweets(array $user, string $keyword = null)
     {
         $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         // 接続チェック
@@ -72,22 +73,38 @@ function createTweet(array $data)
                 U.image_name AS user_image_name,
                 -- ログインユーザーがいいね！したか（している場合、値が入る）
                 L.id AS like_id,
-                -- いいね！数
+                -- 同感！数
                 (SELECT COUNT(*) FROM likes WHERE status = 'active' AND tweet_id = T.id) AS like_count
             FROM
                 tweets AS T
-                -- ユーザーテーブルを紐付ける
+                -- ユーザーテーブルをusers.idとtweets.user_idで紐付ける
                 JOIN
                 users AS U ON U.id = T.user_id AND U.status = 'active'
-                -- いいね！テーブルを紐付ける
+                -- 同感！テーブルをlikes.tweet_idとtweets.idで紐付ける
                 LEFT JOIN
                 likes AS L ON L.tweet_id = T.id AND L.status = 'active' AND L.user_id = '$login_user_id'
             WHERE
                 T.status = 'active'
         SQL;
      
+        // 検索キーワードが入力されていた場合
+        if (isset($keyword)) {
+        // エスケープ
+        $keyword = $mysqli->real_escape_string($keyword);
+        // ツイート主のニックネーム・ユーザー名・本文から部分一致検索
+        $query .= ' AND CONCAT(U.nickname, U.name, T.body) LIKE "%' . $keyword . '%"';
+        }
+
+
+        // 新しい順に並び替え
+        $query .= ' ORDER BY T.created_at DESC';
+        // 表示件数50件
+        $query .= ' LIMIT 50';
+
+
         // SQL実行
-        if ($result = $mysqli->query($query)) {
+        $result = $mysqli->query($query);
+        if ($result) {
             // データを配列で受け取る
             $response = $result->fetch_all(MYSQLI_ASSOC);
         } else {
